@@ -1,0 +1,15 @@
+.selectWrapper {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 0.5rem;
+}
+
+.selectWrapper label {
+    font-weight: bold;
+}
+
+.selectWrapper select {
+    padding: 5px;
+    font-size: 1.2rem;
+}

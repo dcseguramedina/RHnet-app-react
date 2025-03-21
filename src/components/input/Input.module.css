@@ -1,0 +1,15 @@
+.inputWrapper {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 0.5rem;
+}
+
+.inputWrapper label {
+    font-weight: bold;
+}
+
+.inputWrapper input {
+    padding: 5px;
+    font-size: 1.2rem;
+}
