@@ -11,11 +11,19 @@ interface LinkProps {
 
 // Component creation
 const Header: React.FC = () => {
-    const navigationLinks: LinkProps[] = [
+    const isOnCurrentVue: boolean = false;
+
+    const navigationLinks: LinkProps[] = isOnCurrentVue ? [
         {
             icon: "fa fa-user",
             text: "View Current Employee",
-            url: "",
+            url: "/current-employees",
+        },
+    ] : [
+        {
+            icon: "fa fa-home",
+            text: "Home",
+            url: "/",
         },
     ]
 
