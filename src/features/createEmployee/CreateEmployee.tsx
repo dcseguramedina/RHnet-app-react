@@ -1,5 +1,6 @@
 import React, {FormEvent, useState} from "react";
 import Input from "../../components/input/Input.tsx";
+import {DatePicker } from "antd";
 import Select from "../../components/select/Select";
 import Button from "../../components/button/Button.tsx";
 import styles from "./CreateEmployee.module.css";
@@ -106,26 +107,29 @@ const CreateEmployee: React.FC = () => {
                         required
                         aria-required="true"
                     />
-                    <Input
-                        label="Date of Birth"
-                        id="dateOfBirth"
-                        type="text"
-                        value={employeeForm.dateOfBirth}
-                        onChange={handleInputChange}
-                        placeholder="Date of Birth"
-                        required
-                        aria-required="true"
-                    />
-                    <Input
-                        label="Stard Date"
-                        id="startDate"
-                        type="text"
-                        value={employeeForm.startDate}
-                        onChange={handleInputChange}
-                        placeholder="Start Date"
-                        required
-                        aria-required="true"
-                    />
+                    <div className={styles.datePickerWrapper}>
+                        <label htmlFor="dateOfBirth">Date of Birth</label>
+                        <DatePicker
+                            id="startDate"
+                            format="MM-DD-YYYY"
+                            onChange={handleInputChange}
+                            required
+                            aria-required="true"
+                            className={styles.datePickerInput}
+                        />
+                    </div>
+                    <div className={styles.datePickerWrapper}>
+                        <label htmlFor="startDate">Start Date</label>
+                        <DatePicker
+                            id="startDate"
+                            format="MM-DD-YYYY"
+                            onChange={handleInputChange}
+                            required
+                            aria-required="true"
+                            className={styles.datePickerInput}
+                        />
+                    </div>
+
                     <fieldset>
                         <legend>Address</legend>
                         <Input
