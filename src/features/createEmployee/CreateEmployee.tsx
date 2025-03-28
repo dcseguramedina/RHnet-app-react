@@ -1,6 +1,8 @@
 import React, {FormEvent, useState} from "react";
 import Input from "../../components/input/Input.tsx";
-import {DatePicker } from "antd";
+import {DatePicker} from "antd";
+import type { DatePickerProps } from 'antd';
+import moment from 'moment';
 import Select from "../../components/select/Select";
 import Button from "../../components/button/Button.tsx";
 import styles from "./CreateEmployee.module.css";
@@ -53,6 +55,14 @@ const CreateEmployee: React.FC = () => {
             [id]: value
         }));
     };
+
+    const handleDateChange = (fieldName: keyof EmployeeForm) =>
+        (date: moment.Moment | null, dateString: string) => {
+            setEmployeeForm(prevForm => ({
+                ...prevForm,
+                [fieldName]: dateString
+            }));
+        };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -110,9 +120,10 @@ const CreateEmployee: React.FC = () => {
                     <div className={styles.datePickerWrapper}>
                         <label htmlFor="dateOfBirth">Date of Birth</label>
                         <DatePicker
-                            id="startDate"
+                            id="dateOfBirth"
+                            value={employeeForm.dateOfBirth ? moment(employeeForm.dateOfBirth) : null}
+                            onChange={handleDateChange('dateOfBirth')}
                             format="MM-DD-YYYY"
-                            onChange={handleInputChange}
                             required
                             aria-required="true"
                             className={styles.datePickerInput}
@@ -122,8 +133,9 @@ const CreateEmployee: React.FC = () => {
                         <label htmlFor="startDate">Start Date</label>
                         <DatePicker
                             id="startDate"
+                            value={employeeForm.startDate ? moment(employeeForm.startDate) : null}
+                            onChange={handleDateChange('startDate')}
                             format="MM-DD-YYYY"
-                            onChange={handleInputChange}
                             required
                             aria-required="true"
                             className={styles.datePickerInput}

@@ -13,7 +13,7 @@ interface LinkProps {
 const Header: React.FC = () => {
     const isOnCurrentVue: boolean = false;
 
-    const navigationLinks: LinkProps[] = isOnCurrentVue ? [
+    const navigationLinks: LinkProps[] = !isOnCurrentVue ? [
         {
             icon: "fa fa-user",
             text: "View Current Employee",
@@ -25,7 +25,8 @@ const Header: React.FC = () => {
             text: "Home",
             url: "/",
         },
-    ]
+    ];
+
 
     return (
         <header className={styles.header}>
