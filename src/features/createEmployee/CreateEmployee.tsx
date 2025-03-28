@@ -1,6 +1,6 @@
 import React, {FormEvent, useState} from "react";
 import Input from "../../components/input/Input.tsx";
-import {DatePicker} from "antd";
+import {DatePicker, Modal } from "antd";
 import type { DatePickerProps } from 'antd';
 import moment from 'moment';
 import Select from "../../components/select/Select";
@@ -35,6 +35,8 @@ const CreateEmployee: React.FC = () => {
         zipCode: "",
         department: ""
     });
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Update the employeeForm state
     // Uses the name attribute of the select element to dynamically update the corresponding property in the state object
@@ -76,7 +78,7 @@ const CreateEmployee: React.FC = () => {
         // Save updated employees array to localStorage
         localStorage.setItem('employees', JSON.stringify(employees));
 
-        // TO-DO: add modal //
+        setIsModalOpen(true);
 
         // Clear form fields and clear errors
         setEmployeeForm({
@@ -90,6 +92,10 @@ const CreateEmployee: React.FC = () => {
             zipCode: "",
             department: ""
         });
+    };
+
+    const handleOk = () => {
+        setIsModalOpen(false);
     };
 
     return (
@@ -190,6 +196,9 @@ const CreateEmployee: React.FC = () => {
                         name="department"
                     />
                     <Button type="submit" textContent="Save"/>
+                    <Modal title="Modal" open={isModalOpen} onOk={handleOk}>
+                        <p>Employee Created!</p>
+                    </Modal>
                 </form>
             </section>
         </main>
