@@ -1,9 +1,8 @@
 import React, {FormEvent, useState} from "react";
 import Input from "../../components/input/Input.tsx";
 import {DatePicker, Modal } from "antd";
-import type { DatePickerProps } from 'antd';
 import moment from 'moment';
-import Select from "../../components/select/Select";
+import { SelectComponent } from "select_react_plugin";
 import Button from "../../components/button/Button.tsx";
 import styles from "./CreateEmployee.module.css";
 import {departments, states} from "../../data/data.ts";
@@ -170,7 +169,7 @@ const CreateEmployee: React.FC = () => {
                             required
                             aria-required="true"
                         />
-                        <Select
+                        <SelectComponent
                             label="State"
                             options={states.map(state => ({value: state.abbreviation, label: state.name}))}
                             value={employeeForm.state}
@@ -188,7 +187,7 @@ const CreateEmployee: React.FC = () => {
                             aria-required="true"
                         />
                     </fieldset>
-                    <Select
+                    <SelectComponent
                         label="Department"
                         options={departments}
                         value={employeeForm.department}
