@@ -1,11 +1,12 @@
 import React, {useState} from "react";
+import {useSelector} from "react-redux";
+import {RootState} from "../../store/types.ts";
 import {Input, Table} from "antd";
 import styles from "./ViewCurrentEmployees.module.css";
-import {RootState} from "../../store/types.ts";
-import {useSelector} from "react-redux";
 
 // Interfaces
 interface Employee {
+    id?: string;
     firstName: string;
     lastName: string;
     dateOfBirth: string;
@@ -27,101 +28,95 @@ interface Column {
 
 // Component creation
 const ViewCurrentEmployees: React.FC = () => {
-    // Redux states
     const employees = useSelector((state: RootState) => state.employees.employees);
-    console.log(employees)
-
-    // React states
-    const [searchTerm, setSearchTerm] = useState('');
     const [filteredData, setFilteredData] = useState(employees);
-    const handleSearch = (value) => {
-        setSearchTerm(value);
+
+    const handleSearch = (value: string) => {
         const filtered = employees.filter(employee =>
             Object.values(employee).some(val =>
                 String(val).toLowerCase().includes(value.toLowerCase())
             )
         );
         setFilteredData(filtered);
-        setPagination(prev => ({...prev, total: filtered.length, current: 1}));
     };
+
     const [pagination, setPagination] = useState({
-        current: 1, // Current page
-        pageSize: 10, // Number of rows per page
-        total: employees.length, // Total number of rows
+        current: 1,
+        pageSize: 10,
     });
+
+    const handleShowSizeChange = (current: number, size: number) => {
+        setPagination({
+            current: 1, // Reset to first page when page size changes
+            pageSize: size,
+        });
+    };
 
     const columns: Column[] = [
         {
             title: 'First Name',
             dataIndex: 'firstName',
             key: 'firstName',
-            sorter: (a, b) => a.firstName.length - b.firstName.length,
+            sorter: (a, b) => a.firstName.localeCompare(b.firstName),
             sortDirections: ['ascend', 'descend'],
         },
         {
             title: 'Last Name',
             dataIndex: 'lastName',
             key: 'lastName',
-            sorter: (a, b) => a.lastName.length - b.lastName.length,
-            sortDirections: ['ascend', 'descend'],
+            sorter: (a, b) => a.lastName.localeCompare(b.lastName),
         },
         {
             title: 'Date of Birth',
             dataIndex: 'dateOfBirth',
             key: 'dateOfBirth',
-            sorter: (a, b) => new Date(a.dateOfBirth) - new Date(b.dateOfBirth),
-            sortDirections: ['ascend', 'descend'],
+            sorter: (a, b) => {
+                const dateA = new Date(a.dateOfBirth).getTime();
+                const dateB = new Date(b.dateOfBirth).getTime();
+                return dateA - dateB;
+            },
         },
         {
             title: 'Start Date',
             dataIndex: 'startDate',
             key: 'startDate',
-            sorter: (a, b) => new Date(a.startDate) - new Date(b.startDate),
-            sortDirections: ['ascend', 'descend'],
+            sorter: (a, b) => {
+                const dateA = new Date(a.startDate).getTime();
+                const dateB = new Date(b.startDate).getTime();
+                return dateA - dateB;
+            },
         },
         {
             title: 'Street',
             dataIndex: 'street',
             key: 'street',
             sorter: (a, b) => a.street.toLowerCase().localeCompare(b.street.toLowerCase()),
-            sortDirections: ['ascend', 'descend'],
         },
         {
             title: 'City',
             dataIndex: 'city',
             key: 'city',
-            sorter: (a, b) => a.city.length - b.city.length,
-            sortDirections: ['ascend', 'descend'],
+            sorter: (a, b) => a.city.localeCompare(b.city),
         },
         {
             title: 'State',
             dataIndex: 'state',
             key: 'state',
             sorter: (a, b) => a.state.localeCompare(b.state),
-            sortDirections: ['ascend', 'descend'],
         },
         {
             title: 'Zip Code',
             dataIndex: 'zipCode',
             key: 'zipCode',
-            sorter: (a, b) => a.zipCode - b.zipCode,
-            sortDirections: ['ascend', 'descend'],
+            sorter: (a, b) => a.zipCode.localeCompare(b.zipCode),
         },
         {
             title: 'Department',
             dataIndex: 'department',
             key: 'department',
-            sorter: (a, b) => a.department.length - b.department.length,
-            sortDirections: ['ascend', 'descend'],
+            sorter: (a, b) => a.department.localeCompare(b.department),
         },
     ];
-
-    const handleTableChange = (newPagination) => {
-        setPagination({
-            ...newPagination,
-            total: filteredData.length  // Keep total in sync with filtered data
-        });
-    };
 
     return (
         <main>
@@ -131,18 +126,21 @@ const ViewCurrentEmployees: React.FC = () => {
                     placeholder="Search..."
                     allowClear
                     onChange={e => handleSearch(e.target.value)}
-                    style={{ marginBottom: 16 }}
+                    style={{marginBottom: 16}}
                 />
                 <Table
-                    dataSource={filteredData}  // Changed from employees
+                    dataSource={filteredData}
                     columns={columns}
                     pagination={{
                         current: pagination.current,
                         pageSize: pagination.pageSize,
-                        total: pagination.total,
                         showSizeChanger: true,
-                    }}
-                    onChange={handleTableChange}
+                        pageSizeOptions: ['10', '20', '50', '100'],
+                        showTotal: (total, range) =>
+                            `Showing ${range[0]} to ${range[1]} of ${total} entries`,
+                        onShowSizeChange: handleShowSizeChange,
+                        onChange: (page, pageSize) => setPagination({ current: page, pageSize}),
+                        }}
                 />
             </section>
         </main>

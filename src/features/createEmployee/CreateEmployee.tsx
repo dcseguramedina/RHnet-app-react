@@ -1,17 +1,18 @@
 import React, {FormEvent, useState} from "react";
-import Input from "../../components/input/Input.tsx";
+import {useDispatch} from "react-redux";
+import {AppDispatch} from "../../store/types.ts";
 import {DatePicker, Modal } from "antd";
 import moment from 'moment';
+import Input from "../../components/input/Input.tsx";
 import { SelectComponent } from "select_component_react_plugin";
 import Button from "../../components/button/Button.tsx";
-import styles from "./CreateEmployee.module.css";
 import {departments, states} from "../../data/data.ts";
-import {useDispatch} from "react-redux";
 import {addEmployee} from "./employeeSlice.ts";
-import {AppDispatch} from "../../store/types.ts";
+import styles from "./CreateEmployee.module.css";
 
 // Interfaces
 interface EmployeeForm {
+    id?: string
     firstName: string;
     lastName: string;
     dateOfBirth: string;
@@ -64,7 +65,7 @@ const CreateEmployee: React.FC = () => {
     };
 
     const handleDateChange = (fieldName: keyof EmployeeForm) =>
-        (data: moment.Moment, dateString: string) => {
+        (_date: moment.Moment, dateString: string | string[]) => {
             setEmployeeForm(prevForm => ({
                 ...prevForm,
                 [fieldName]: dateString
