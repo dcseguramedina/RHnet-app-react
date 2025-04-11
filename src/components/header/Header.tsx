@@ -1,6 +1,7 @@
 import React from "react";
 import Navigation from "../navigation/Navigation";
 import styles from "./Header.module.css";
+import {useLocation} from "react-router-dom";
 
 // Interfaces
 interface LinkProps {
@@ -11,9 +12,10 @@ interface LinkProps {
 
 // Component creation
 const Header: React.FC = () => {
-    const isOnCurrentVue: boolean = false;
+    const location = useLocation();
+    const isOnCurrentEmployees = location.pathname === '/current-employees';
 
-    const navigationLinks: LinkProps[] = !isOnCurrentVue ? [
+    const navigationLinks: LinkProps[] = !isOnCurrentEmployees ? [
         {
             icon: "fa fa-user",
             text: "View Current Employee",
