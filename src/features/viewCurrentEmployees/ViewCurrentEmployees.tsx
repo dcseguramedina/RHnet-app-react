@@ -1,26 +1,63 @@
 import React, {useState} from "react";
-import {Table} from "antd";
-import employeeData from '../../data/employee-data.json';
+import {Input, Table} from "antd";
 import styles from "./ViewCurrentEmployees.module.css";
+import {RootState} from "../../store/types.ts";
+import {useSelector} from "react-redux";
 
 // Interfaces
+interface Employee {
+    firstName: string;
+    lastName: string;
+    dateOfBirth: string;
+    startDate: string;
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    department: string;
+}
+
+interface Column {
+    title: string;
+    dataIndex: keyof Employee;
+    key: string;
+    sorter?: boolean | ((a: Employee, b: Employee) => number);
+    sortDirections?: ('ascend' | 'descend')[];
+}
 
 // Component creation
 const ViewCurrentEmployees: React.FC = () => {
+    const employees = useSelector((state: RootState) => state.employees.employees);
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredData, setFilteredData] = useState(employees);
+
+    const handleSearch = (value) => {
+        setSearchTerm(value);
+        const filtered = employees.filter(employee =>
+            Object.values(employee).some(val =>
+                String(val).toLowerCase().includes(value.toLowerCase())
+            )
+        );
+        setFilteredData(filtered);
+        setPagination(prev => ({...prev, total: filtered.length, current: 1}));
+    };
+
     // React states
     const [pagination, setPagination] = useState({
         current: 1, // Current page
         pageSize: 10, // Number of rows per page
-        total: employeeData.length, // Total number of rows
+        total: employees.length, // Total number of rows
     });
 
-    const handleTableChange = (pagination) => {
+    const handleTableChange = (newPagination) => {
         setPagination({
-            ...pagination,
+            ...newPagination,
+            total: filteredData.length  // Keep total in sync with filtered data
         });
     };
 
-    const columns = [
+    const columns: Column[] = [
         {
             title: 'First Name',
             dataIndex: 'firstName',
@@ -53,7 +90,8 @@ const ViewCurrentEmployees: React.FC = () => {
             title: 'Street',
             dataIndex: 'street',
             key: 'street',
-            sorter: true,
+            sorter: (a, b) => a.street.toLowerCase().localeCompare(b.street.toLowerCase()),
+            sortDirections: ['ascend', 'descend'],
         },
         {
             title: 'City',
@@ -66,13 +104,15 @@ const ViewCurrentEmployees: React.FC = () => {
             title: 'State',
             dataIndex: 'state',
             key: 'state',
-            sorter: true,
+            sorter: (a, b) => a.state.localeCompare(b.state),
+            sortDirections: ['ascend', 'descend'],
         },
         {
             title: 'Zip Code',
             dataIndex: 'zipCode',
             key: 'zipCode',
             sorter: (a, b) => a.zipCode - b.zipCode,
+            sortDirections: ['ascend', 'descend'],
         },
         {
             title: 'Department',
@@ -86,8 +126,14 @@ const ViewCurrentEmployees: React.FC = () => {
         <main>
             <section className={styles.content}>
                 <h2>Current Employees</h2>
+                <Input.Search
+                    placeholder="Search..."
+                    allowClear
+                    onChange={e => handleSearch(e.target.value)}
+                    style={{ marginBottom: 16 }}
+                />
                 <Table
-                    dataSource={employeeData}
+                    dataSource={filteredData}  // Changed from employees
                     columns={columns}
                     pagination={{
                         current: pagination.current,
@@ -95,7 +141,8 @@ const ViewCurrentEmployees: React.FC = () => {
                         total: pagination.total,
                         showSizeChanger: true,
                     }}
-                    onChange={handleTableChange}/>
+                    onChange={handleTableChange}
+                />
             </section>
         </main>
     );
