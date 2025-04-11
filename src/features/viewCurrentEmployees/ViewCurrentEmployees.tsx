@@ -27,11 +27,13 @@ interface Column {
 
 // Component creation
 const ViewCurrentEmployees: React.FC = () => {
+    // Redux states
     const employees = useSelector((state: RootState) => state.employees.employees);
+    console.log(employees)
 
+    // React states
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredData, setFilteredData] = useState(employees);
-
     const handleSearch = (value) => {
         setSearchTerm(value);
         const filtered = employees.filter(employee =>
@@ -42,20 +44,11 @@ const ViewCurrentEmployees: React.FC = () => {
         setFilteredData(filtered);
         setPagination(prev => ({...prev, total: filtered.length, current: 1}));
     };
-
-    // React states
     const [pagination, setPagination] = useState({
         current: 1, // Current page
         pageSize: 10, // Number of rows per page
         total: employees.length, // Total number of rows
     });
-
-    const handleTableChange = (newPagination) => {
-        setPagination({
-            ...newPagination,
-            total: filteredData.length  // Keep total in sync with filtered data
-        });
-    };
 
     const columns: Column[] = [
         {
@@ -122,6 +115,14 @@ const ViewCurrentEmployees: React.FC = () => {
             sortDirections: ['ascend', 'descend'],
         },
     ];
+
+    const handleTableChange = (newPagination) => {
+        setPagination({
+            ...newPagination,
+            total: filteredData.length  // Keep total in sync with filtered data
+        });
+    };
+
     return (
         <main>
             <section className={styles.content}>

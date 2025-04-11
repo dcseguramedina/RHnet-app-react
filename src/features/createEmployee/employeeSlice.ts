@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import employeesData from '../../data/employee-data.json';
 
 // Interfaces
 interface EmployeeForm {
@@ -20,7 +19,7 @@ interface EmployeeState {
 
 // Set up the initial state
 const initialState: EmployeeState = {
-    employees: employeesData,
+    employees:  [],
 };
 
 // Create an employee slice with the initial state

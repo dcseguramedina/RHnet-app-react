@@ -2,10 +2,13 @@ import React, {FormEvent, useState} from "react";
 import Input from "../../components/input/Input.tsx";
 import {DatePicker, Modal } from "antd";
 import moment from 'moment';
-import { SelectComponent } from "select_react_plugin";
+import { SelectComponent } from "select_component_react_plugin";
 import Button from "../../components/button/Button.tsx";
 import styles from "./CreateEmployee.module.css";
 import {departments, states} from "../../data/data.ts";
+import {useDispatch} from "react-redux";
+import {addEmployee} from "./employeeSlice.ts";
+import {AppDispatch} from "../../store/types.ts";
 
 // Interfaces
 interface EmployeeForm {
@@ -37,6 +40,9 @@ const CreateEmployee: React.FC = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    // Redux states
+    const dispatch = useDispatch<AppDispatch>();
+
     // Update the employeeForm state
     // Uses the name attribute of the select element to dynamically update the corresponding property in the state object
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -58,7 +64,7 @@ const CreateEmployee: React.FC = () => {
     };
 
     const handleDateChange = (fieldName: keyof EmployeeForm) =>
-        (date: moment.Moment | null, dateString: string) => {
+        (data: moment.Moment, dateString: string) => {
             setEmployeeForm(prevForm => ({
                 ...prevForm,
                 [fieldName]: dateString
@@ -68,14 +74,8 @@ const CreateEmployee: React.FC = () => {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Get existing employees from localStorage
-        const employees = JSON.parse(localStorage.getItem('employees') || '[]');
-
-        // Add new employee
-        employees.push(employeeForm);
-
-        // Save updated employees array to localStorage
-        localStorage.setItem('employees', JSON.stringify(employees));
+        // Dispatch the addEmployee action
+        dispatch(addEmployee(employeeForm));
 
         setIsModalOpen(true);
 
@@ -94,6 +94,10 @@ const CreateEmployee: React.FC = () => {
     };
 
     const handleOk = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
         setIsModalOpen(false);
     };
 
@@ -195,8 +199,8 @@ const CreateEmployee: React.FC = () => {
                         name="department"
                     />
                     <Button type="submit" textContent="Save"/>
-                    <Modal title="Modal" open={isModalOpen} onOk={handleOk}>
-                        <p>Employee Created!</p>
+                    <Modal title="Employee creation" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} cancelButtonProps={{ style: { display: 'none' } }}>
+                        <p>The employee has been successfully created!</p>
                     </Modal>
                 </form>
             </section>
