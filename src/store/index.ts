@@ -1,4 +1,5 @@
 import {configureStore} from "@reduxjs/toolkit";
+import employeeReducer from '../features/createEmployee/employeeSlice.ts';
 
 // Set up a Redux store using Redux Toolkit
 
@@ -9,7 +10,7 @@ import {configureStore} from "@reduxjs/toolkit";
 
 const store = configureStore({
     reducer: {
-
+        employees: employeeReducer,
     },
 });
 
