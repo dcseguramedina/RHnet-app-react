@@ -9,7 +9,8 @@ import AppRoutes from "../src/routes/AppRoutes";
    <StrictMode>: Enables additional checks and warnings for the app
    <BrowserRouter>: Sets up routing for the application
    <Header /> and <Footer />: Renders the header and footer components
-   <AppRoutes />: Contains the main routing logic for the app */
+   <AppRoutes />: Contains the main routing logic for the app
+*/
 
 const App = () => (
     <Provider store={store}>

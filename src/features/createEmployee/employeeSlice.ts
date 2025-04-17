@@ -3,6 +3,7 @@ import employeeData from '../../data/employee-data.json'
 
 // Interfaces
 interface EmployeeForm {
+    id: string;
     firstName: string;
     lastName: string;
     dateOfBirth: string;
@@ -20,7 +21,7 @@ interface EmployeeState {
 
 // Set up the initial state
 const initialState: EmployeeState = {
-    employees:  employeeData,
+    employees: employeeData as EmployeeForm[],
 };
 
 // Create an employee slice with the initial state
@@ -31,12 +32,9 @@ const employeeSlice = createSlice({
         addEmployee(state, action: PayloadAction<EmployeeForm>) {
             state.employees.push(action.payload);
         },
-        setEmployees(state, action: PayloadAction<EmployeeForm[]>) {
-            state.employees = action.payload;
-        },
     },
 });
 
-export const { addEmployee, setEmployees } = employeeSlice.actions;
+export const { addEmployee } = employeeSlice.actions;
 
 export default employeeSlice.reducer;

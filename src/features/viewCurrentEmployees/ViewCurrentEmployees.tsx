@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store/types.ts";
 import {Input, Table} from "antd";
@@ -6,7 +6,7 @@ import styles from "./ViewCurrentEmployees.module.css";
 
 // Interfaces
 interface Employee {
-    id?: string;
+    id: string;
     firstName: string;
     lastName: string;
     dateOfBirth: string;
@@ -28,24 +28,33 @@ interface Column {
 
 // Component creation
 const ViewCurrentEmployees: React.FC = () => {
+    // Redux states
     const employees = useSelector((state: RootState) => state.employees.employees);
+
+    // React states
     const [filteredData, setFilteredData] = useState(employees);
-
-    const handleSearch = (value: string) => {
-        const filtered = employees.filter(employee =>
-            Object.values(employee).some(val =>
-                String(val).toLowerCase().includes(value.toLowerCase())
-            )
-        );
-        setFilteredData(filtered);
-    };
-
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 10,
     });
 
-    const handleShowSizeChange = (current: number, size: number) => {
+    // Use useEffect to keep filteredData in sync
+    useEffect(() => {
+        setFilteredData(employees);
+    }, [employees]);
+
+    const handleSearch = (value: string) => {
+        const filtered = employees.filter((employee) =>
+            Object.values(employee).some((val) =>
+                String(val).toLowerCase().includes(value.toLowerCase())
+            )
+        );
+        setFilteredData(filtered);
+        // Reset the current page to 1 when a search is performed
+        setPagination((prevPagination) => ({...prevPagination, current: 1}));
+    };
+
+    const handleShowSizeChange = (_current: number, size: number) => {
         setPagination({
             current: 1, // Reset to first page when page size changes
             pageSize: size,
@@ -131,6 +140,7 @@ const ViewCurrentEmployees: React.FC = () => {
                 <Table
                     dataSource={filteredData}
                     columns={columns}
+                    rowKey="id"
                     pagination={{
                         current: pagination.current,
                         pageSize: pagination.pageSize,
@@ -139,8 +149,8 @@ const ViewCurrentEmployees: React.FC = () => {
                         showTotal: (total, range) =>
                             `Showing ${range[0]} to ${range[1]} of ${total} entries`,
                         onShowSizeChange: handleShowSizeChange,
-                        onChange: (page, pageSize) => setPagination({ current: page, pageSize}),
-                        }}
+                        onChange: (page, pageSize) => setPagination({current: page, pageSize}),
+                    }}
                 />
             </section>
         </main>

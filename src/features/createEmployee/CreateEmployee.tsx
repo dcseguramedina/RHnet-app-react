@@ -1,10 +1,11 @@
 import React, {FormEvent, useState} from "react";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../../store/types.ts";
-import {DatePicker, Modal } from "antd";
+import {nanoid} from "@reduxjs/toolkit";
+import {DatePicker, Modal} from "antd";
 import moment from 'moment';
 import Input from "../../components/input/Input.tsx";
-import { SelectComponent } from "select_component_react_plugin";
+import {SelectComponent} from "select_component_react_plugin";
 import Button from "../../components/button/Button.tsx";
 import {departments, states} from "../../data/data.ts";
 import {addEmployee} from "./employeeSlice.ts";
@@ -12,7 +13,7 @@ import styles from "./CreateEmployee.module.css";
 
 // Interfaces
 interface EmployeeForm {
-    id?: string
+    id: string
     firstName: string;
     lastName: string;
     dateOfBirth: string;
@@ -28,6 +29,7 @@ interface EmployeeForm {
 const CreateEmployee: React.FC = () => {
     // React states
     const [employeeForm, setEmployeeForm] = useState<EmployeeForm>({
+        id: "",
         firstName: "",
         lastName: "",
         dateOfBirth: "",
@@ -44,16 +46,6 @@ const CreateEmployee: React.FC = () => {
     // Redux states
     const dispatch = useDispatch<AppDispatch>();
 
-    // Update the employeeForm state
-    // Uses the name attribute of the select element to dynamically update the corresponding property in the state object
-    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const {name, value} = event.target;
-        setEmployeeForm(prevForm => ({
-            ...prevForm,
-            [name]: value
-        }));
-    };
-
     // Update the employeeForm state for input elements
     // Uses the id attribute of the input element to dynamically update the corresponding property in the state object.
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,6 +56,7 @@ const CreateEmployee: React.FC = () => {
         }));
     };
 
+    // Update the employeeForm state for date elements
     const handleDateChange = (fieldName: keyof EmployeeForm) =>
         (_date: moment.Moment, dateString: string | string[]) => {
             setEmployeeForm(prevForm => ({
@@ -72,16 +65,26 @@ const CreateEmployee: React.FC = () => {
             }));
         };
 
+    // Uses the name attribute of the select element to dynamically update the corresponding property in the state object
+    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const {name, value} = event.target;
+        setEmployeeForm(prevForm => ({
+            ...prevForm,
+            [name]: value
+        }));
+    };
+
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         // Dispatch the addEmployee action
-        dispatch(addEmployee(employeeForm));
+        dispatch(addEmployee({...employeeForm, id: nanoid()}));
 
         setIsModalOpen(true);
 
         // Clear form fields and clear errors
         setEmployeeForm({
+            id: "",
             firstName: "",
             lastName: "",
             dateOfBirth: "",
@@ -176,15 +179,15 @@ const CreateEmployee: React.FC = () => {
                         />
                         <SelectComponent
                             label="State"
-                            options={states.map(state => ({value: state.abbreviation, label: state.name}))}
+                            options={states.map((state) => ({value: state.abbreviation, label: state.name}))}
                             value={employeeForm.state}
-                            onChange={handleChange}
+                            onChange={handleSelectChange}
                             name="state"
                         />
                         <Input
                             label="Zip Code"
                             id="zipCode"
-                            type="number"
+                            type="text"
                             value={employeeForm.zipCode}
                             onChange={handleInputChange}
                             placeholder="Zip Code"
@@ -196,11 +199,12 @@ const CreateEmployee: React.FC = () => {
                         label="Department"
                         options={departments}
                         value={employeeForm.department}
-                        onChange={handleChange}
+                        onChange={handleSelectChange}
                         name="department"
                     />
                     <Button type="submit" textContent="Save"/>
-                    <Modal title="Employee creation" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} cancelButtonProps={{ style: { display: 'none' } }}>
+                    <Modal title="Employee creation" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}
+                           cancelButtonProps={{style: {display: 'none'}}}>
                         <p>The employee has been successfully created!</p>
                     </Modal>
                 </form>
